@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Draw 3D Line on Google Maps</title>
+    <meta charset="utf-8" />
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+      }
+      #map3d {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+    <!-- Load the experimental 3D Maps API -->
+    <script async
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZwtfECQcocEuWwXKrzrn-VkwRe_zOPgc&v=alpha&libraries=maps3d&callback=init">
+    </script>
+  </head>
+  <body>
+    <!-- Embed the 3D map -->
+    <gmp-map-3d
+      id="map3d"
+      mode="HYBRID"
+      center="35.68,139.76,1000"
+      tilt="80"
+      heading="0"
+      range="2000"
+    ></gmp-map-3d>
+
+    <script>
+      async function init() {
+        const { Polyline3DElement, AltitudeMode } =
+          await google.maps.importLibrary("maps3d");
+
+        const map3d = document.getElementById("map3d");
+
+        let coords = [];
+        let line = null;
+
+        map3d.addEventListener("click", (event) => {
+          const p = event.detail?.latLngAlt || event.detail?.position;
+          if (!p) return;
+
+          coords.push(p);
+
+          if (!line) {
+            line = new Polyline3DElement({
+              coordinates: coords,
+              strokeColor: "#FF0000",
+              strokeWidth: 4,
+              altitudeMode: AltitudeMode.ABSOLUTE,
+              extruded: false,
+              drawsOccludedSegments: true,
+            });
+            map3d.append(line);
+          } else {
+            line.coordinates = coords;
+          }
+        });
+      }
+
+      // Required for `callback=init` to work
+      window.init = init;
+    </script>
+  </body>
+</html>

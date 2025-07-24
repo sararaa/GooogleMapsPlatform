@@ -10,7 +10,8 @@ import {
   Bell,
   ChevronLeft,
   ChevronRight,
-  Activity
+  Activity,
+  Globe
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -32,6 +33,7 @@ const navItems: NavItem[] = [
   { id: 'documents', label: 'Documents', icon: FileText },
   { id: 'users', label: 'Users', icon: Users },
   { id: 'api', label: 'API Portal', icon: Key },
+  { id: 'worldview', label: 'World View', icon: Globe },
   { id: 'activity', label: 'Activity', icon: Activity },
   { id: 'notifications', label: 'Notifications', icon: Bell, badge: 2 },
   { id: 'settings', label: 'Settings', icon: Settings }
