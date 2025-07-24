@@ -1,17 +1,27 @@
 // Temporary wrapper for gmp-map-3d
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, forwardRef } from 'react';
 
 interface Map3DProps {
   center?: { lat: number; lng: number; altitude?: number };
   onMapLoad?: (mapEl: any) => void;
 }
 
-const Map3D: React.FC<Map3DProps> = ({ center, onMapLoad }) => {
+const Map3D = forwardRef<HTMLElement, Map3DProps>(({ center, onMapLoad }, ref) => {
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
 
+  // Forward the ref to the <gmp-map-3d> DOM element
   useEffect(() => {
+    if (typeof ref === 'function') {
+      ref(mapRef.current);
+    } else if (ref) {
+      (ref as React.MutableRefObject<HTMLElement | null>).current = mapRef.current;
+    }
+  }, [ref]);
+
+  useEffect(() => {
+
     const init = async () => {
       const { Marker3DInteractiveElement, AltitudeMode } =
         await google.maps.importLibrary('maps3d');
@@ -19,28 +29,27 @@ const Map3D: React.FC<Map3DProps> = ({ center, onMapLoad }) => {
       const mapEl = mapRef.current;
       if (!mapEl) return;
 
-      mapEl.addEventListener('gmp-click', (e: any) => {
-        const pos = e.detail?.latLngAlt || e.detail?.position;
-        if (!pos) return;
-
-        console.log('📍 Clicked:', pos);
-
-        if (!markerRef.current) {
-          const marker = new Marker3DInteractiveElement({
-            position: pos,
-            altitudeMode: AltitudeMode.ABSOLUTE,
-          });
-
-          marker.addEventListener('gmp-click', () => {
-            console.log('🟡 Marker clicked!');
-          });
-
-          mapEl.append(marker);
-          markerRef.current = marker;
-        } else {
-          markerRef.current.position = pos;
+      // Draw initial marker at center if provided
+      if (center && center.lat && center.lng) {
+        // Remove any existing marker
+        if (markerRef.current && mapEl.contains(markerRef.current)) {
+          mapEl.removeChild(markerRef.current);
+          markerRef.current = null;
         }
-      });
+        // Create new marker
+        const marker = new Marker3DInteractiveElement({
+          position: { ...center, altitude: 22 },
+          altitudeMode: AltitudeMode.ABSOLUTE,
+        });
+        marker.addEventListener('gmp-click', () => {
+          console.log('🟡 Marker clicked!');
+        });
+        mapEl.append(marker);
+        markerRef.current = marker;
+        // Debug log
+        console.log('[DEBUG] Marker position after creation:', marker.position);
+      }
+
 
       if (typeof onMapLoad === 'function') {
         onMapLoad(mapEl);
@@ -50,7 +59,7 @@ const Map3D: React.FC<Map3DProps> = ({ center, onMapLoad }) => {
     if (window.google?.maps?.importLibrary) {
       init();
     }
-  }, [onMapLoad]);
+  }, [onMapLoad, center]);
 
   useEffect(() => {
     if (mapRef.current && center) {
@@ -68,6 +77,6 @@ const Map3D: React.FC<Map3DProps> = ({ center, onMapLoad }) => {
       range={2000}
     />
   );
-};
+});
 
 export default Map3D;
