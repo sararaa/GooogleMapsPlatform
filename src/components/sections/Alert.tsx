@@ -42,6 +42,7 @@ const MyGlobe = () => {
     fetchAlerts();
   }, []);
 
+  // Restore: update cameraProps.center when alerts change
   useEffect(() => {
     if (alerts.length > 0) {
       const firstAlert = alerts[0];
@@ -59,34 +60,35 @@ const MyGlobe = () => {
   useEffect(() => {
     if (!map3dRef.current || !window.google?.maps?.importLibrary) return;
     let marker: any = markerRef.current;
-    let maps3dLib: any;
-    let cleanup: (() => void) | undefined;
     let clickHandler: any;
 
     const setup = async () => {
-      maps3dLib = await window.google.maps.importLibrary('maps3d');
-      const { Marker3DInteractiveElement, AltitudeMode } = maps3dLib;
+      const { Marker3DInteractiveElement, AltitudeMode } = await window.google.maps.importLibrary('maps3d');
       const mapEl = map3dRef.current;
       if (!mapEl) return;
+
+      // Remove any existing marker
+      Array.from(mapEl.children).forEach(child => {
+        if (child instanceof Marker3DInteractiveElement) {
+          mapEl.removeChild(child);
+        }
+      });
+      markerRef.current = null;
 
       // Draw marker for the first alert if present
       if (alerts.length > 0) {
         const pos = parseGeometry(alerts[0].map_point);
         if (pos) {
-          if (!marker) {
-            marker = new Marker3DInteractiveElement({
-              position: { ...pos, altitude: 22 },
-              altitudeMode: AltitudeMode.ABSOLUTE,
-            });
-            marker.addEventListener('gmp-click', () => {
-              console.log(markerRef.current.position);
-              console.log('🟡 Marker itself was clicked!');
-            });
-            mapEl.appendChild(marker);
-            markerRef.current = marker;
-          } else {
-            marker.position = pos;
-          }
+          marker = new Marker3DInteractiveElement({
+            position: { ...pos, altitude: 22 },
+            altitudeMode: AltitudeMode.ABSOLUTE,
+          });
+          marker.addEventListener('gmp-click', () => {
+            console.log('🟡 Marker itself was clicked!');
+          });
+          mapEl.appendChild(marker);
+          markerRef.current = marker;
+          console.log('[DEBUG] Initial marker position:', marker.position);
         }
       }
 
@@ -103,6 +105,11 @@ const MyGlobe = () => {
             console.log('🟡 Marker itself was clicked!');
             console.log(markerRef.current.position);
           });
+          Array.from(mapEl.children).forEach(child => {
+            if (child instanceof Marker3DInteractiveElement) {
+              mapEl.removeChild(child);
+            }
+          });
           mapEl.appendChild(marker);
           markerRef.current = marker;
         } else {
@@ -110,16 +117,18 @@ const MyGlobe = () => {
         }
       };
       mapEl.addEventListener('gmp-click', clickHandler);
-      cleanup = () => {
-        mapEl.removeEventListener('gmp-click', clickHandler);
-        if (marker && mapEl.contains(marker)) {
-          mapEl.removeChild(marker);
-        }
-      };
     };
     setup();
     return () => {
-      if (cleanup) cleanup();
+      const mapEl = map3dRef.current;
+      if (mapEl && clickHandler) {
+        mapEl.removeEventListener('gmp-click', clickHandler);
+      }
+      // Remove marker on cleanup
+      if (markerRef.current && mapEl && mapEl.contains(markerRef.current)) {
+        mapEl.removeChild(markerRef.current);
+        markerRef.current = null;
+      }
     };
   }, [alerts, map3dRef.current]);
 

@@ -21,7 +21,6 @@ const Map3D = forwardRef<HTMLElement, Map3DProps>(({ center, onMapLoad }, ref) =
   }, [ref]);
 
   useEffect(() => {
-
     const init = async () => {
       const { Marker3DInteractiveElement, AltitudeMode } =
         await google.maps.importLibrary('maps3d');
@@ -32,10 +31,12 @@ const Map3D = forwardRef<HTMLElement, Map3DProps>(({ center, onMapLoad }, ref) =
       // Draw initial marker at center if provided
       if (center && center.lat && center.lng) {
         // Remove any existing marker
-        if (markerRef.current && mapEl.contains(markerRef.current)) {
-          mapEl.removeChild(markerRef.current);
-          markerRef.current = null;
-        }
+        Array.from(mapEl.children).forEach(child => {
+          if (child instanceof Marker3DInteractiveElement) {
+            mapEl.removeChild(child);
+          }
+        });
+        markerRef.current = null;
         // Create new marker
         const marker = new Marker3DInteractiveElement({
           position: { ...center, altitude: 22 },
