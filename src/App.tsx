@@ -7,7 +7,7 @@ import { Dashboard } from './components/sections/Dashboard';
 import { Projects } from './components/sections/Projects';
 import { APIPortal } from './components/sections/APIPortal';
 import { Users } from './components/sections/Users';
-import { WorldView } from './components/sections/WorldView';
+import  MyGlobe  from './components/sections/Alert';
 
 const MainApp: React.FC = () => {
   const { user, isLoading } = useAuth();
@@ -41,7 +41,7 @@ const MainApp: React.FC = () => {
       case 'users':
         return <Users />;
       case 'worldview':
-        return <WorldView />;
+        return <MyGlobe />;
       case 'budget':
         return (
           <div className="p-6 text-center">
