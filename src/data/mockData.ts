@@ -71,10 +71,19 @@ export const mockProjects: Project[] = [
     assignedUsers: ['1', '3'],
     tags: ['smart-city', 'traffic', 'ai'],
     progress: 5,
-    location: 'Multiple Intersections',
+    location: 'Ohio State',
     type: 'cip',
     createdAt: '2025-01-10T00:00:00Z',
-    updatedAt: '2025-01-26T14:30:00Z'
+    updatedAt: '2025-01-26T14:30:00Z',
+    area: {
+      coordinates: [
+        { lat: 42.0, lng: -85.0 },    // Top-left (northwest Ohio)
+        { lat: 42.0, lng: -80.5 },    // Top-right (northeast Ohio)
+        { lat: 38.0, lng: -80.5 },    // Bottom-right (southeast Ohio)
+        { lat: 38.0, lng: -85.0 }     // Bottom-left (southwest Ohio)
+      ],
+      center: { lat: 40.0, lng: -82.75 }
+    }
   },
   {
     id: '3',

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Plus, Filter, Grid3X3, List, Search } from 'lucide-react';
+import { Plus, Filter, Grid3X3, List, Search, Map } from 'lucide-react';
 import { ProjectCard } from '../ProjectCard';
 import { ProjectModal } from '../ProjectModal';
+import { ProjectsMapView } from '../ProjectsMapView';
 import { mockProjects } from '../../data/mockData';
 import { Project } from '../../types';
 
-type ViewMode = 'grid' | 'list';
+type ViewMode = 'grid' | 'list' | 'map';
 type FilterType = 'all' | 'planning' | 'in_progress' | 'on_hold' | 'completed';
 
 export const Projects: React.FC = () => {
@@ -87,6 +88,7 @@ export const Projects: React.FC = () => {
                 className={`p-2 rounded-md transition-colors ${
                   viewMode === 'grid' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'
                 }`}
+                title="Grid View"
               >
                 <Grid3X3 size={16} />
               </button>
@@ -95,42 +97,61 @@ export const Projects: React.FC = () => {
                 className={`p-2 rounded-md transition-colors ${
                   viewMode === 'list' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'
                 }`}
+                title="List View"
               >
                 <List size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode('map')}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === 'map' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'
+                }`}
+                title="Map View"
+              >
+                <Map size={16} />
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Projects Grid/List */}
-      <div className={`${
-        viewMode === 'grid' 
-          ? 'grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6' 
-          : 'space-y-4'
-      }`}>
-        {filteredProjects.map(project => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            onClick={setSelectedProject}
-          />
-        ))}
-      </div>
-
-      {filteredProjects.length === 0 && (
-        <div className="text-center py-12">
-          <div className="text-gray-400 mb-4">
-            <Filter size={48} className="mx-auto" />
+      {/* Projects Views */}
+      {viewMode === 'map' ? (
+        <ProjectsMapView 
+          projects={filteredProjects}
+          onProjectClick={setSelectedProject}
+        />
+      ) : (
+        <>
+          <div className={`${
+            viewMode === 'grid' 
+              ? 'grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6' 
+              : 'space-y-4'
+          }`}>
+            {filteredProjects.map(project => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                onClick={setSelectedProject}
+              />
+            ))}
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No projects found</h3>
-          <p className="text-gray-600">
-            {searchTerm || filter !== 'all' 
-              ? 'Try adjusting your search or filter criteria'
-              : 'Get started by creating your first project'
-            }
-          </p>
-        </div>
+
+          {filteredProjects.length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-gray-400 mb-4">
+                <Filter size={48} className="mx-auto" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No projects found</h3>
+              <p className="text-gray-600">
+                {searchTerm || filter !== 'all' 
+                  ? 'Try adjusting your search or filter criteria'
+                  : 'Get started by creating your first project'
+                }
+              </p>
+            </div>
+          )}
+        </>
       )}
 
       {/* Project Detail Modal */}

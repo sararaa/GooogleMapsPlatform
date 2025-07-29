@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, Calendar, DollarSign, Users, MapPin, FileText, MessageCircle } from 'lucide-react';
+import { X, Calendar, DollarSign, Users, MapPin, FileText, MessageCircle, Map } from 'lucide-react';
 import { Project, ProjectStatus, ProjectPriority, ProjectType } from '../types';
 import { mockUsers, mockDepartments } from '../data/mockData';
+import { MapDrawing } from './MapDrawing';
 
 interface ProjectModalProps {
   project?: Project;
@@ -11,7 +12,7 @@ interface ProjectModalProps {
 
 export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, onUpdate }) => {
   const isEditing = !!project;
-  const [activeTab, setActiveTab] = useState<'overview' | 'budget' | 'documents' | 'activity'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'location' | 'budget' | 'documents' | 'activity'>('overview');
   
   const [formData, setFormData] = useState({
     title: project?.title || '',
@@ -24,7 +25,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
     budget: project?.budget || 0,
     department: project?.department || '',
     location: project?.location || '',
-    assignedUsers: project?.assignedUsers || []
+    assignedUsers: project?.assignedUsers || [],
+    area: project?.area || { coordinates: [], center: undefined }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -39,7 +41,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
       startDate: new Date(formData.startDate).toISOString(),
       endDate: new Date(formData.endDate).toISOString(),
       createdAt: project?.createdAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
+      area: formData.area?.coordinates?.length ? formData.area : undefined
     };
 
     onUpdate(updatedProject);
@@ -72,6 +75,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
           <nav className="flex space-x-8 px-6">
             {[
               { id: 'overview', label: 'Overview', icon: FileText },
+              { id: 'location', label: 'Location', icon: Map },
               { id: 'budget', label: 'Budget', icon: DollarSign },
               { id: 'documents', label: 'Documents', icon: FileText },
               { id: 'activity', label: 'Activity', icon: MessageCircle }
@@ -299,6 +303,38 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
                 </button>
               </div>
             </form>
+          )}
+
+          {activeTab === 'location' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Location Description
+                  </label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                    <input
+                      type="text"
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="e.g., Main Street Bridge, Downtown Area"
+                    />
+                  </div>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Provide a text description of the project location for quick reference.
+                  </p>
+                </div>
+              </div>
+
+              <div className="border-t border-gray-200 pt-6">
+                <MapDrawing
+                  initialArea={formData.area?.coordinates?.length ? formData.area : undefined}
+                  onAreaChange={(area) => setFormData({ ...formData, area })}
+                />
+              </div>
+            </div>
           )}
 
           {activeTab === 'budget' && isEditing && (

@@ -5,6 +5,7 @@ import { Sidebar } from './components/Sidebar';
 import { TopNav } from './components/TopNav';
 import { Dashboard } from './components/sections/Dashboard';
 import { Projects } from './components/sections/Projects';
+import { Communications } from './components/sections/Communications';
 import { APIPortal } from './components/sections/APIPortal';
 import { Users } from './components/sections/Users';
 import  MyGlobe  from './components/sections/Alert';
@@ -36,6 +37,12 @@ const MainApp: React.FC = () => {
         return <Dashboard />;
       case 'projects':
         return <Projects />;
+      case 'communications-reach-out':
+        return <Communications initialType={'reach-out' as const} />;
+      case 'communications-city-forum':
+        return <Communications initialType={'city-forum' as const} />;
+      case 'communications-contractors':
+        return <Communications initialType={'contractors' as const} />;
       case 'api':
         return <APIPortal />;
       case 'users':

@@ -10,8 +10,11 @@ import {
   Bell,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Activity,
-  Globe
+  Globe,
+  MessageCircle,
+  HardHat
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -24,11 +27,30 @@ interface NavItem {
   label: string;
   icon: React.ComponentType<any>;
   badge?: number;
+  hasDropdown?: boolean;
+  subItems?: SubNavItem[];
+}
+
+interface SubNavItem {
+  id: string;
+  label: string;
+  icon: React.ComponentType<any>;
 }
 
 const navItems: NavItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
   { id: 'projects', label: 'Projects', icon: FolderKanban, badge: 3 },
+  { 
+    id: 'communications', 
+    label: 'Communications', 
+    icon: MessageCircle,
+    hasDropdown: true,
+    subItems: [
+      { id: 'communications-reach-out', label: 'Reach Out', icon: Users },
+      { id: 'communications-city-forum', label: 'City Forum', icon: MessageCircle },
+      { id: 'communications-contractors', label: 'Contractors', icon: HardHat }
+    ]
+  },
   { id: 'budget', label: 'Budget', icon: DollarSign },
   { id: 'documents', label: 'Documents', icon: FileText },
   { id: 'users', label: 'Users', icon: Users },
@@ -41,6 +63,7 @@ const navItems: NavItem[] = [
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [openDropdowns, setOpenDropdowns] = useState<Set<string>>(new Set());
 
   return (
     <div className={`bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ${
@@ -72,12 +95,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange
         <ul className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = activeSection === item.id;
+            const isActive = activeSection === item.id || (item.subItems && item.subItems.some(subItem => activeSection === subItem.id));
+            const isDropdownOpen = openDropdowns.has(item.id);
+            
+            const handleItemClick = () => {
+              if (item.hasDropdown) {
+                const newOpenDropdowns = new Set(openDropdowns);
+                if (isDropdownOpen) {
+                  newOpenDropdowns.delete(item.id);
+                } else {
+                  newOpenDropdowns.add(item.id);
+                }
+                setOpenDropdowns(newOpenDropdowns);
+              } else {
+                onSectionChange(item.id);
+              }
+            };
             
             return (
               <li key={item.id}>
                 <button
-                  onClick={() => onSectionChange(item.id)}
+                  onClick={handleItemClick}
                   className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                     isActive
                       ? 'bg-blue-50 text-blue-700 border border-blue-200'
@@ -93,9 +131,41 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange
                           {item.badge}
                         </span>
                       )}
+                      {item.hasDropdown && (
+                        <ChevronDown 
+                          size={16} 
+                          className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+                        />
+                      )}
                     </>
                   )}
                 </button>
+
+                {/* Dropdown Sub-items */}
+                {item.hasDropdown && item.subItems && !isCollapsed && isDropdownOpen && (
+                  <ul className="ml-6 mt-1 space-y-1 border-l border-gray-200 pl-3">
+                    {item.subItems.map((subItem) => {
+                      const SubIcon = subItem.icon;
+                      const isSubActive = activeSection === subItem.id;
+                      
+                      return (
+                        <li key={subItem.id}>
+                          <button
+                            onClick={() => onSectionChange(subItem.id)}
+                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                              isSubActive
+                                ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                            }`}
+                          >
+                            <SubIcon size={16} />
+                            <span className="flex-1 text-left">{subItem.label}</span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </li>
             );
           })}

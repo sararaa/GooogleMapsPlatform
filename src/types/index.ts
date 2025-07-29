@@ -36,6 +36,11 @@ export interface Project {
   type: ProjectType;
   createdAt: string;
   updatedAt: string;
+  // Area coordinates for map display
+  area?: {
+    coordinates: Array<{lat: number, lng: number}>;
+    center?: {lat: number, lng: number};
+  };
 }
 
 export type ProjectStatus = 'planning' | 'in_progress' | 'on_hold' | 'completed' | 'cancelled';

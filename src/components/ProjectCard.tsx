@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, DollarSign, Users, MapPin, Clock } from 'lucide-react';
+import { Calendar, DollarSign, Users, MapPin, Clock, Map } from 'lucide-react';
 import { Project } from '../types';
 import { mockUsers } from '../data/mockData';
 
@@ -85,8 +85,19 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) =>
           <span>${(project.budget / 1000000).toFixed(1)}M</span>
         </div>
         <div className="flex items-center gap-2 text-gray-600">
-          <MapPin size={16} />
-          <span className="truncate">{project.location}</span>
+          <div className="flex items-center gap-1">
+            <MapPin size={16} />
+            {project.area?.coordinates?.length ? (
+              <span title="Project area defined on map">
+                <Map size={14} className="text-green-600" />
+              </span>
+            ) : (
+              <span title="No project area defined">
+                <Map size={14} className="text-gray-300" />
+              </span>
+            )}
+          </div>
+          <span className="truncate">{project.location || 'No location specified'}</span>
         </div>
         <div className="flex items-center gap-2 text-gray-600">
           <Clock size={16} />
