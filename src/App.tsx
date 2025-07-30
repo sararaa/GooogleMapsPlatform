@@ -8,11 +8,23 @@ import { Projects } from './components/sections/Projects';
 import { Communications } from './components/sections/Communications';
 import { APIPortal } from './components/sections/APIPortal';
 import { Users } from './components/sections/Users';
+import { Activity } from './components/sections/Activity';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import  MyGlobe  from './components/sections/Alert';
 
 const MainApp: React.FC = () => {
   const { user, isLoading } = useAuth();
   const [activeSection, setActiveSection] = useState('dashboard');
+
+  // Handle section navigation from custom events
+  React.useEffect(() => {
+    const handleSectionChange = (event: CustomEvent) => {
+      setActiveSection(event.detail);
+    };
+
+    window.addEventListener('change-section', handleSectionChange as EventListener);
+    return () => window.removeEventListener('change-section', handleSectionChange as EventListener);
+  }, []);
 
   if (isLoading) {
     return (
@@ -65,10 +77,14 @@ const MainApp: React.FC = () => {
         );
       case 'activity':
         return (
-          <div className="p-6 text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Activity Feed</h1>
-            <p className="text-gray-600">Activity tracking features will be implemented here</p>
-          </div>
+          <ErrorBoundary fallback={
+            <div className="p-6 text-center">
+              <h1 className="text-2xl font-bold text-gray-900 mb-4">Activity Feed Error</h1>
+              <p className="text-gray-600">There was an error loading the activity feed. Please refresh the page.</p>
+            </div>
+          }>
+            <Activity />
+          </ErrorBoundary>
         );
       case 'notifications':
         return (

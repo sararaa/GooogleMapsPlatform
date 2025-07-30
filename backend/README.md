@@ -18,20 +18,12 @@ This backend system handles incoming Twilio phone calls from citizens reporting 
    pip install -r requirements.txt
    ```
 
-2. **Environment Variables**:
-   Create a `.env` file in the backend directory:
-   ```env
-   TWILIO_ACCOUNTSID=your_account_sid
-   TWILIO_AUTHTOKEN=your_auth_token
-   TWILIO_NUMBER=your_twilio_phone_number
-   ```
-
-3. **Run the Server**:
+2. **Run the Server**:
    ```bash
    python twilio_test.py
    ```
 
-4. **Configure Twilio Webhook**:
+3. **Configure Twilio Webhook**:
    - In your Twilio Console, configure your phone number's webhook URL to point to your server
    - For local development, use ngrok: `ngrok http 5000`
    - Set webhook URL to: `https://your-ngrok-url.ngrok.io/`

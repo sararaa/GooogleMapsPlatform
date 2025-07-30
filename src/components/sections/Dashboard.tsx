@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Clock, DollarSign, FolderKanban, Users, Phone, MapPin, AlertTriangle } from 'lucide-react';
 import { mockProjects, mockUsers } from '../../data/mockData';
-import { CitizenReport } from '../../types';
+import { CitizenReport, ProjectPriority } from '../../types';
 import { CitizenReportModal } from '../CitizenReportModal';
+import { ErrorBoundary } from '../ErrorBoundary';
 
 const StatCard: React.FC<{
   title: string;
@@ -44,6 +45,28 @@ export const Dashboard: React.FC = () => {
   const [selectedReport, setSelectedReport] = useState<CitizenReport | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Transform raw API data to CitizenReport format
+  const transformReportData = (rawReport: any): CitizenReport => {
+    // Handle both formats: raw Twilio data and already formatted data
+    return {
+      id: rawReport.id || `report_${Date.now()}`,
+      type: 'citizen_report',
+      title: rawReport.title || 'Citizen Report Received',
+      description: rawReport.description || 
+                  (rawReport.transcription ? `Phone report: ${rawReport.transcription.substring(0, 100)}${rawReport.transcription.length > 100 ? '...' : ''}` : 'No description available'),
+      location: rawReport.location || 'Location not specified',
+      caller_number: rawReport.caller_number || 'Unknown',
+      recording_url: rawReport.recording_url || '',
+      full_transcription: rawReport.full_transcription || rawReport.transcription || 'No transcription available',
+      timestamp: rawReport.timestamp || rawReport.call_time || new Date().toISOString(),
+      status: rawReport.status || 'new',
+      priority: (['low', 'medium', 'high', 'urgent'].includes(rawReport.priority) ? rawReport.priority : 'medium') as ProjectPriority,
+      coordinates: rawReport.coordinates || undefined
+    };
+  };
+
+
+
   const activeProjects = mockProjects.filter(p => p.status === 'in_progress').length;
   const totalBudget = mockProjects.reduce((acc, p) => acc + p.budget, 0);
   const totalSpent = mockProjects.reduce((acc, p) => acc + p.spent, 0);
@@ -58,11 +81,17 @@ export const Dashboard: React.FC = () => {
       try {
         const response = await fetch('http://localhost:5000/api/citizen-reports');
         if (response.ok) {
-          const reports = await response.json();
-          setCitizenReports(reports);
+          const rawReports = await response.json();
+          if (Array.isArray(rawReports)) {
+            const transformedReports = rawReports.map(transformReportData);
+            setCitizenReports(transformedReports);
+          } else {
+            setCitizenReports([]);
+          }
         }
       } catch (error) {
         console.error('Failed to fetch citizen reports:', error);
+        setCitizenReports([]);
       } finally {
         setLoading(false);
       }
@@ -187,12 +216,12 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Citizen Reports Activity Feed */}
+        {/* Activity Feed */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
               <Phone size={20} className="text-blue-600" />
-              Citizen Reports
+              Activity
             </h2>
             <div className="flex items-center gap-2">
               {citizenReports.filter(r => r.status === 'new').length > 0 && (
@@ -200,7 +229,10 @@ export const Dashboard: React.FC = () => {
                   {citizenReports.filter(r => r.status === 'new').length} New
                 </span>
               )}
-              <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+              <button 
+                onClick={() => window.dispatchEvent(new CustomEvent('change-section', { detail: 'activity' }))}
+                className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+              >
                 View all
               </button>
             </div>
@@ -226,7 +258,16 @@ export const Dashboard: React.FC = () => {
                 <div 
                   key={report.id} 
                   className="p-3 hover:bg-gray-50 rounded-lg cursor-pointer border border-gray-100 transition-colors"
-                  onClick={() => setSelectedReport(report)}
+                  onClick={(e) => {
+                    e.preventDefault(); 
+                    e.stopPropagation();
+                    console.log('Dashboard - Clicking on report:', report);
+                    try {
+                      setSelectedReport(report);
+                    } catch (error) {
+                      console.error('Dashboard - Error setting selected report:', error);
+                    }
+                  }}
                 >
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0">
@@ -308,11 +349,26 @@ export const Dashboard: React.FC = () => {
 
       {/* Citizen Report Modal */}
       {selectedReport && (
-        <CitizenReportModal
-          report={selectedReport}
-          onClose={() => setSelectedReport(null)}
-          onStatusUpdate={handleStatusUpdate}
-        />
+        <ErrorBoundary fallback={
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 text-center">
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">Error Loading Report</h2>
+              <p className="text-gray-600 mb-4">There was an error loading the report details.</p>
+              <button 
+                onClick={() => setSelectedReport(null)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        }>
+          <CitizenReportModal
+            report={selectedReport}
+            onClose={() => setSelectedReport(null)}
+            onStatusUpdate={handleStatusUpdate}
+          />
+        </ErrorBoundary>
       )}
     </div>
   );

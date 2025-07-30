@@ -17,21 +17,48 @@ export const CitizenReportModal: React.FC<CitizenReportModalProps> = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
 
+  // Safety check for report data
+  if (!report || !report.id) {
+    console.error('CitizenReportModal: Invalid report data provided');
+    onClose();
+    return null;
+  }
+
   const handlePlayRecording = () => {
-    if (!audioElement) {
-      const audio = new Audio(report.recording_url);
-      audio.onended = () => setIsPlaying(false);
-      setAudioElement(audio);
-      audio.play();
-      setIsPlaying(true);
-    } else {
-      if (isPlaying) {
-        audioElement.pause();
-        setIsPlaying(false);
-      } else {
-        audioElement.play();
-        setIsPlaying(true);
+    try {
+      if (!report.recording_url) {
+        console.error('No recording URL available');
+        return;
       }
+
+      if (!audioElement) {
+        const audio = new Audio(report.recording_url);
+        audio.onended = () => setIsPlaying(false);
+        audio.onerror = (e) => {
+          console.error('Audio playback error:', e);
+          setIsPlaying(false);
+        };
+        setAudioElement(audio);
+        audio.play().catch(e => {
+          console.error('Failed to play audio:', e);
+          setIsPlaying(false);
+        });
+        setIsPlaying(true);
+      } else {
+        if (isPlaying) {
+          audioElement.pause();
+          setIsPlaying(false);
+        } else {
+          audioElement.play().catch(e => {
+            console.error('Failed to resume audio:', e);
+            setIsPlaying(false);
+          });
+          setIsPlaying(true);
+        }
+      }
+    } catch (error) {
+      console.error('Error in handlePlayRecording:', error);
+      setIsPlaying(false);
     }
   };
 
@@ -69,8 +96,14 @@ export const CitizenReportModal: React.FC<CitizenReportModalProps> = ({
             <div>
               <h2 className="text-xl font-semibold text-gray-900">Citizen Report</h2>
               <p className="text-sm text-gray-600">
-                Received {new Date(report.timestamp).toLocaleDateString()} at{' '}
-                {new Date(report.timestamp).toLocaleTimeString()}
+                {report.timestamp ? (
+                  <>
+                    Received {new Date(report.timestamp).toLocaleDateString()} at{' '}
+                    {new Date(report.timestamp).toLocaleTimeString()}
+                  </>
+                ) : (
+                  'Received at unknown time'
+                )}
               </p>
             </div>
           </div>
@@ -103,12 +136,12 @@ export const CitizenReportModal: React.FC<CitizenReportModalProps> = ({
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Phone size={16} className="text-gray-500" />
-                    <span className="text-gray-700">{report.caller_number}</span>
+                    <span className="text-gray-700">{report.caller_number || 'Unknown caller'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock size={16} className="text-gray-500" />
                     <span className="text-gray-700">
-                      {new Date(report.timestamp).toLocaleString()}
+                      {report.timestamp ? new Date(report.timestamp).toLocaleString() : 'Time unknown'}
                     </span>
                   </div>
                 </div>
@@ -119,9 +152,9 @@ export const CitizenReportModal: React.FC<CitizenReportModalProps> = ({
                 <h3 className="font-medium text-gray-900 mb-3">Reported Location</h3>
                 <div className="flex items-start gap-2">
                   <MapPin size={16} className="text-gray-500 mt-0.5" />
-                  <span className="text-gray-700">{report.location}</span>
+                  <span className="text-gray-700">{report.location || 'Location not specified'}</span>
                 </div>
-                {report.coordinates && (
+                {report.coordinates && report.coordinates.lat && report.coordinates.lng && (
                   <p className="text-sm text-gray-600 mt-2">
                     Coordinates: {report.coordinates.lat.toFixed(6)}, {report.coordinates.lng.toFixed(6)}
                   </p>
@@ -131,13 +164,17 @@ export const CitizenReportModal: React.FC<CitizenReportModalProps> = ({
               {/* Audio Recording */}
               <div className="bg-gray-50 rounded-lg p-4">
                 <h3 className="font-medium text-gray-900 mb-3">Audio Recording</h3>
-                <button
-                  onClick={handlePlayRecording}
-                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  {isPlaying ? <Pause size={16} /> : <Play size={16} />}
-                  {isPlaying ? 'Pause Recording' : 'Play Recording'}
-                </button>
+                {report.recording_url ? (
+                  <button
+                    onClick={handlePlayRecording}
+                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+                    {isPlaying ? 'Pause Recording' : 'Play Recording'}
+                  </button>
+                ) : (
+                  <p className="text-gray-500 text-sm">No recording available</p>
+                )}
               </div>
 
               {/* Status Update */}
