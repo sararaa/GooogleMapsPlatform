@@ -28,28 +28,7 @@ const Map3D = forwardRef<HTMLElement, Map3DProps>(({ center, onMapLoad }, ref) =
       const mapEl = mapRef.current;
       if (!mapEl) return;
 
-      // Draw initial marker at center if provided
-      if (center && center.lat && center.lng) {
-        // Remove any existing marker
-        Array.from(mapEl.children).forEach(child => {
-          if (child instanceof Marker3DInteractiveElement) {
-            mapEl.removeChild(child);
-          }
-        });
-        markerRef.current = null;
-        // Create new marker
-        const marker = new Marker3DInteractiveElement({
-          position: { ...center, altitude: 22 },
-          altitudeMode: AltitudeMode.ABSOLUTE,
-        });
-        marker.addEventListener('gmp-click', () => {
-          console.log('🟡 Marker clicked!');
-        });
-        mapEl.append(marker);
-        markerRef.current = marker;
-        // Debug log
-        console.log('[DEBUG] Marker position after creation:', marker.position);
-      }
+      
 
 
       if (typeof onMapLoad === 'function') {

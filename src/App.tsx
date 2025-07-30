@@ -11,6 +11,8 @@ import { Users } from './components/sections/Users';
 import { Activity } from './components/sections/Activity';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import  MyGlobe  from './components/sections/Alert';
+import AlertReview from './components/AlertReview';
+import { Routes, Route } from 'react-router-dom';
 
 const MainApp: React.FC = () => {
   const { user, isLoading } = useAuth();
@@ -124,7 +126,10 @@ const MainApp: React.FC = () => {
 function App() {
   return (
     <AuthProvider>
-      <MainApp />
+      <Routes>
+        <Route path="/alert/:alertId" element={<AlertReview />} />
+        <Route path="/*" element={<MainApp />} />
+      </Routes>
     </AuthProvider>
   );
 }
