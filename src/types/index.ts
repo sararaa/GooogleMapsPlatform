@@ -115,3 +115,21 @@ export interface Activity {
   createdAt: string;
   metadata?: Record<string, any>;
 }
+
+export interface CitizenReport {
+  id: string;
+  type: 'citizen_report';
+  title: string;
+  description: string;
+  location: string;
+  caller_number: string;
+  recording_url: string;
+  full_transcription: string;
+  timestamp: string;
+  status: 'new' | 'in_progress' | 'resolved' | 'closed';
+  priority: ProjectPriority;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+}
