@@ -14,7 +14,9 @@ import {
   Activity,
   Globe,
   MessageCircle,
-  HardHat
+  HardHat,
+  Phone,
+  Shield
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -39,7 +41,9 @@ interface SubNavItem {
 
 const navItems: NavItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
-  { id: 'municipal-projects', label: 'Municipal Projects', icon: HardHat }, 
+  { id: 'municipal-projects', label: 'Municipal Projects', icon: HardHat },
+  { id: 'budget', label: 'Budget', icon: DollarSign },
+  { id: 'documents', label: 'Documents', icon: FileText },
   { 
     id: 'communications', 
     label: 'Communications', 
@@ -51,14 +55,28 @@ const navItems: NavItem[] = [
       { id: 'communications-contractors', label: 'Contractors', icon: HardHat }
     ]
   },
-  { id: 'budget', label: 'Budget', icon: DollarSign },
-  { id: 'documents', label: 'Documents', icon: FileText },
-  { id: 'users', label: 'Users', icon: Users },
-  { id: 'api', label: 'API Portal', icon: Key },
-  { id: 'worldview', label: 'World View', icon: Globe },
-  { id: 'activity', label: 'Activity', icon: Activity },
-  { id: 'notifications', label: 'Notifications', icon: Bell, badge: 2 },
-  { id: 'settings', label: 'Settings', icon: Settings }
+  { 
+    id: '311-activity', 
+    label: '311 Activity', 
+    icon: Phone,
+    hasDropdown: true,
+    subItems: [
+      { id: 'worldview', label: 'World View', icon: Globe },
+      { id: 'activity', label: 'Activity Feed', icon: Activity }
+    ]
+  },
+  { 
+    id: 'admin-console', 
+    label: 'Admin Console', 
+    icon: Shield,
+    hasDropdown: true,
+    subItems: [
+      { id: 'users', label: 'Users', icon: Users },
+      { id: 'api', label: 'API Portal', icon: Key },
+      { id: 'notifications', label: 'Notifications', icon: Bell },
+      { id: 'settings', label: 'Settings', icon: Settings }
+    ]
+  }
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }) => {
@@ -160,6 +178,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange
                           >
                             <SubIcon size={16} />
                             <span className="flex-1 text-left">{subItem.label}</span>
+                            {subItem.id === 'notifications' && (
+                              <span className="bg-blue-100 text-blue-700 text-xs rounded-full px-2 py-0.5 min-w-[20px] text-center">
+                                2
+                              </span>
+                            )}
                           </button>
                         </li>
                       );
