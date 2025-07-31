@@ -2,7 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { Phone, MapPin, Clock, AlertTriangle, Filter } from 'lucide-react';
 import { CitizenReport, ProjectPriority } from '../../types';
 import { CitizenReportModal } from '../CitizenReportModal';
+import { supabase } from '../../supabaseClient.ts';
 import { ErrorBoundary } from '../ErrorBoundary';
+
+// Helper function to parse Supabase geometry
+const parseSupabaseGeometry = (geometryString: string) => {
+  try {
+    // Parse POINT(lng lat) format
+    const match = geometryString.match(/POINT\(([^)]+)\)/);
+    if (match) {
+      const [lng, lat] = match[1].split(' ').map(Number);
+      return { lat, lng };
+    }
+  } catch (error) {
+    console.error('Error parsing geometry:', error);
+  }
+  return undefined;
+};
 
 export const Activity: React.FC = () => {
   const [citizenReports, setCitizenReports] = useState<CitizenReport[]>([]);
@@ -31,22 +47,48 @@ export const Activity: React.FC = () => {
     };
   };
 
-  // Fetch citizen reports from backend
+  // Fetch citizen reports from backend (Flask) or Supabase fallback
   useEffect(() => {
     const fetchCitizenReports = async () => {
       try {
         setError(null);
-        const response = await fetch('http://localhost:5001/api/citizen-reports');
-        if (response.ok) {
-          const rawReports = await response.json();
-          if (Array.isArray(rawReports)) {
-            const transformedReports = rawReports.map(transformReportData);
-            setCitizenReports(transformedReports);
-          } else {
-            setCitizenReports([]);
+        
+        // Try Flask API first (for local development)
+        try {
+          const response = await fetch('http://localhost:5001/api/citizen-reports');
+          if (response.ok) {
+            const rawReports = await response.json();
+            if (Array.isArray(rawReports)) {
+              const transformedReports = rawReports.map(transformReportData);
+              setCitizenReports(transformedReports);
+              return; // Success, exit early
+            }
           }
+        } catch (flaskError) {
+          console.log('Flask API not available, trying Supabase...');
+        }
+        
+        // Fallback to Supabase (for production/Vercel)
+        const { data: alertsData, error: supabaseError } = await supabase.from('alerts').select('*');
+        if (!supabaseError && alertsData) {
+                     // Transform Supabase alerts to CitizenReport format
+           const transformedReports: CitizenReport[] = alertsData.map((alert: any) => ({
+             id: `supabase_${alert.id}`,
+             type: 'citizen_report' as const,
+             title: 'Citizen Report from Phone',
+             description: `${alert.type} reported via phone call`,
+             location: 'Location from coordinates',
+             caller_number: 'Unknown',
+             recording_url: '',
+             full_transcription: `${alert.type} incident reported`,
+             timestamp: alert.created_at || new Date().toISOString(),
+             status: 'new' as const,
+             priority: 'medium' as const,
+             coordinates: alert.map_point ? parseSupabaseGeometry(alert.map_point) : undefined
+           }));
+          setCitizenReports(transformedReports);
         } else {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          setCitizenReports([]);
         }
       } catch (error) {
         console.error('Failed to fetch citizen reports:', error);
