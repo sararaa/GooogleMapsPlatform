@@ -4,6 +4,7 @@ import { supabase } from '../../supabaseClient.ts';
 import { useParams, Link } from 'react-router-dom';
 import { CitizenReport } from '../../types';
 
+
 function parseGeometry(geom: any): { lat: number; lng: number; altitude: number } | null {
   if (geom && typeof geom === 'object' && geom.type === 'Point' && Array.isArray(geom.coordinates)) {
     const [lng, lat] = geom.coordinates;
@@ -31,6 +32,11 @@ const MyGlobe: React.FC = () => {
   const { alertId } = useParams<{ alertId?: string }>();
   const map3dRef = useRef<HTMLElement | null>(null);
   const markerRef = useRef<HTMLElement | null>(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatInput, setChatInput] = useState('');
+  const [chatResponse, setChatResponse] = useState('');
+  const [isChatLoading, setIsChatLoading] = useState(false);
+
 
   // Transform raw API data to CitizenReport format (same as Activity.tsx)
   const transformReportData = (rawReport: any): CitizenReport => {
@@ -187,6 +193,13 @@ const MyGlobe: React.FC = () => {
       {/* Header with summary */}
       <div className="bg-white rounded-lg border border-gray-200 p-4">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">World View</h1>
+        <button
+          onClick={() => setIsChatOpen(true)}
+          className="mt-2 px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          💬 Talk to Chatbot
+        </button>
+
         <div className="flex items-center gap-6 text-sm text-gray-600">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-red-500 rounded-full"></div>
@@ -285,6 +298,60 @@ const MyGlobe: React.FC = () => {
           </table>
         </div>
       </div>
+      {isChatOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg p-6 w-[500px] shadow-lg">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Ask the Gemini Chatbot</h2>
+
+            <textarea
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              className="w-full border rounded p-2 mb-3 text-sm"
+              rows={4}
+              placeholder="Ask something about work orders..."
+            />
+
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setIsChatOpen(false)} className="text-gray-600 hover:text-gray-800">Close</button>
+              <button
+                onClick={async () => {
+                  setIsChatLoading(true);
+                  try {
+                    const res = await fetch('http://127.0.0.1:5000/ask-chatbot', {
+
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ message: chatInput }),
+
+                    });
+                    const data = await res.json();
+                    setChatResponse(data.response);
+
+                  } catch (e) {
+                    setChatResponse('Error talking to Gemini.');
+                  } finally {
+                    setIsChatLoading(false);
+                  }
+                }}
+                className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
+              >
+                Ask
+              </button>
+            </div>
+
+            {isChatLoading ? (
+                  <p className="mt-4 text-gray-500">Loading...</p>
+                ) : (
+                  chatResponse && (
+                    <div className="mt-4 bg-gray-50 border p-3 rounded text-sm text-gray-700 whitespace-pre-wrap">
+                      {chatResponse}
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+    )}
+
     </div>
   );
 };
