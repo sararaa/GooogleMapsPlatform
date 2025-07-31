@@ -9,19 +9,20 @@ Your **professional-grade citizen reporting system** is ready! Follow these simp
 ### **Terminal 1: Frontend (React)**
 ```bash
 # Navigate to project root
-cd F:\Repos\GooogleMapsPlatform
+# Navigate to your project root directory
 
 # Start the React development server
 npm run dev
 ```
-**📱 Opens at:** http://localhost:5174/
+**📱 Opens at:** http://localhost:5174/ (Note: Must be HTTP, not HTTPS)
 
 ---
 
 ### **Terminal 2: Backend (Flask + Twilio)**
 ```bash
 # Navigate to backend folder
-cd F:\Repos\GooogleMapsPlatform\backend
+# Navigate to your project's backend folder
+cd backend
 
 # Start the Python backend server
 py twilio_test.py
@@ -43,7 +44,7 @@ ngrok http 5000
 ## 🎯 **Testing Your System**
 
 1. **✅ All 3 terminals running**
-2. **📱 Visit:** http://localhost:5174/ to see your dashboard
+2. **📱 Visit:** http://localhost:5174/ to see your dashboard (ensure it's HTTP, not HTTPS)
 3. **📞 Configure Twilio:** Use your ngrok HTTPS URL as webhook in Twilio Console
 4. **🗺️ Make calls:** Call your Twilio number to create live reports with Google Maps!
 
@@ -60,6 +61,8 @@ ngrok http 5000
 ## 💡 **Pro Tips**
 
 - Keep all 3 terminals open while developing
+- If you get "Failed to fetch" errors, ensure both frontend and backend use HTTP (not HTTPS) for local development
+- Clear browser cache for localhost if you're getting HTTPS redirects
 - Check the Activity section to see all citizen reports
 - Reports show real-time on interactive Google Maps
 - Status management: new → in_progress → resolved → closed

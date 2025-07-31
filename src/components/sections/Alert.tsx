@@ -63,7 +63,12 @@ const MyGlobe: React.FC = () => {
         }
 
         // Fetch citizen reports from backend
-        const response = await fetch('http://localhost:5000/api/citizen-reports');
+        const response = await fetch('http://localhost:5000/api/citizen-reports', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
         if (response.ok) {
           const rawReports = await response.json();
           if (Array.isArray(rawReports)) {
@@ -73,6 +78,9 @@ const MyGlobe: React.FC = () => {
         }
       } catch (error) {
         console.error('Failed to fetch data:', error);
+        // Set empty arrays to prevent further errors
+        setAlerts([]);
+        setCitizenReports([]);
       } finally {
         setLoading(false);
       }

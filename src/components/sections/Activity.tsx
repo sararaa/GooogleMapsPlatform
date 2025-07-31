@@ -36,7 +36,12 @@ export const Activity: React.FC = () => {
     const fetchCitizenReports = async () => {
       try {
         setError(null);
-        const response = await fetch('http://localhost:5000/api/citizen-reports');
+        const response = await fetch('http://localhost:5000/api/citizen-reports', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
         if (response.ok) {
           const rawReports = await response.json();
           if (Array.isArray(rawReports)) {
@@ -50,7 +55,7 @@ export const Activity: React.FC = () => {
         }
       } catch (error) {
         console.error('Failed to fetch citizen reports:', error);
-        setError(error instanceof Error ? error.message : 'Failed to load reports');
+        setError(error instanceof Error ? error.message : 'Failed to load reports. Make sure the backend server is running on http://localhost:5000');
         setCitizenReports([]);
       } finally {
         setLoading(false);
