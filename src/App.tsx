@@ -4,7 +4,6 @@ import { LoginScreen } from './components/LoginScreen';
 import { Sidebar } from './components/Sidebar';
 import { TopNav } from './components/TopNav';
 import { Dashboard } from './components/sections/Dashboard';
-import { Projects } from './components/sections/Projects';
 import { Communications } from './components/sections/Communications';
 import { APIPortal } from './components/sections/APIPortal';
 import { Users } from './components/sections/Users';
