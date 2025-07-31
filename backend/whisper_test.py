@@ -4,7 +4,7 @@ import numpy as np
 import sounddevice as sd
 import queue
 from faster_whisper import WhisperModel
-from google import genai  # Updated import for google-genai
+import google.genai as genai  # Updated import for google-genai
 from geocode_test import geocode_location
 from dotenv import load_dotenv  # For loading .env
 from supabase import create_client, Client  # Supabase integration
