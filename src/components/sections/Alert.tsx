@@ -56,11 +56,6 @@ const MyGlobe: React.FC = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Check if we're on HTTPS and warn user
-        if (window.location.protocol === 'https:') {
-          throw new Error('HTTPS detected! Please visit http://localhost:5174/ instead. Clear browser cache if it keeps redirecting to HTTPS.');
-        }
-        
         // Fetch alerts from Supabase
         const { data: alertsData, error: alertsError } = await supabase.from('alerts').select('*');
         if (!alertsError && alertsData) {
@@ -68,13 +63,7 @@ const MyGlobe: React.FC = () => {
         }
 
         // Fetch citizen reports from backend
-        const response = await fetch('http://localhost:5000/api/citizen-reports', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          mode: 'cors',
-        });
+        const response = await fetch('http://localhost:5000/api/citizen-reports');
         if (response.ok) {
           const rawReports = await response.json();
           if (Array.isArray(rawReports)) {
@@ -84,9 +73,6 @@ const MyGlobe: React.FC = () => {
         }
       } catch (error) {
         console.error('Failed to fetch data:', error);
-        // Set empty arrays to prevent further errors
-        setAlerts([]);
-        setCitizenReports([]);
       } finally {
         setLoading(false);
       }
@@ -191,14 +177,7 @@ const MyGlobe: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <div className="text-lg text-gray-600 mb-2">Loading world view data...</div>
-          {window.location.protocol === 'https:' && (
-            <div className="text-sm text-red-600">
-              Note: If this takes too long, try <a href="http://localhost:5174/" className="underline">switching to HTTP</a>
-            </div>
-          )}
-        </div>
+        <div className="text-lg text-gray-600">Loading world view data...</div>
       </div>
     );
   }

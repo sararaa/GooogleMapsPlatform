@@ -79,11 +79,6 @@ export const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchCitizenReports = async () => {
       try {
-        // Check if we're on HTTPS and warn user
-        if (window.location.protocol === 'https:') {
-          throw new Error('HTTPS detected! Please visit http://localhost:5174/ instead. Clear browser cache if it keeps redirecting to HTTPS.');
-        }
-        
         const response = await fetch('http://localhost:5000/api/citizen-reports');
         if (response.ok) {
           const rawReports = await response.json();
@@ -96,7 +91,6 @@ export const Dashboard: React.FC = () => {
         }
       } catch (error) {
         console.error('Failed to fetch citizen reports:', error);
-        // Don't set error state here since Dashboard doesn't have error display
         setCitizenReports([]);
       } finally {
         setLoading(false);
