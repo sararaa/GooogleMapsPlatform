@@ -61,8 +61,13 @@ ngrok http 5000
 ## 💡 **Pro Tips**
 
 - Keep all 3 terminals open while developing
-- If you get "Failed to fetch" errors, ensure both frontend and backend use HTTP (not HTTPS) for local development
-- Clear browser cache for localhost if you're getting HTTPS redirects
+- **CRITICAL:** If you get "Failed to fetch" errors, this is usually because your browser is redirecting to HTTPS
+- **Solution:** Visit http://localhost:5174/ directly (note HTTP, not HTTPS)
+- **If browser keeps redirecting to HTTPS:**
+  1. Clear browser cache and cookies for localhost
+  2. In Chrome: Go to chrome://net-internals/#hsts → Delete domain security policies → Enter "localhost" → Delete
+  3. Try incognito/private browsing mode
+  4. Or try a different browser
 - Check the Activity section to see all citizen reports
 - Reports show real-time on interactive Google Maps
 - Status management: new → in_progress → resolved → closed

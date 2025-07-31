@@ -36,11 +36,18 @@ export const Activity: React.FC = () => {
     const fetchCitizenReports = async () => {
       try {
         setError(null);
+        
+        // Check if we're on HTTPS and warn user
+        if (window.location.protocol === 'https:') {
+          throw new Error('HTTPS detected! Please visit http://localhost:5174/ instead. Clear browser cache if it keeps redirecting to HTTPS.');
+        }
+        
         const response = await fetch('http://localhost:5000/api/citizen-reports', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           },
+          mode: 'cors',
         });
         if (response.ok) {
           const rawReports = await response.json();
@@ -55,7 +62,11 @@ export const Activity: React.FC = () => {
         }
       } catch (error) {
         console.error('Failed to fetch citizen reports:', error);
-        setError(error instanceof Error ? error.message : 'Failed to load reports. Make sure the backend server is running on http://localhost:5000');
+        if (error instanceof Error && error.message.includes('HTTPS detected')) {
+          setError(error.message);
+        } else {
+          setError(error instanceof Error ? error.message : 'Failed to load reports. Make sure the backend server is running on http://localhost:5000 and you are accessing this page via HTTP (not HTTPS)');
+        }
         setCitizenReports([]);
       } finally {
         setLoading(false);
@@ -170,13 +181,24 @@ export const Activity: React.FC = () => {
           <div className="text-center py-12">
             <AlertTriangle size={48} className="text-red-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Reports</h3>
-            <p className="text-red-600 mb-4">{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Retry
-            </button>
+            <p className="text-red-600 mb-4 max-w-md mx-auto">{error}</p>
+            <div className="space-y-2">
+              {error?.includes('HTTPS detected') ? (
+                <a 
+                  href="http://localhost:5174/"
+                  className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Switch to HTTP
+                </a>
+              ) : (
+                <button 
+                  onClick={() => window.location.reload()} 
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Retry
+                </button>
+              )}
+            </div>
           </div>
         ) : loading ? (
           <div className="text-center py-12">

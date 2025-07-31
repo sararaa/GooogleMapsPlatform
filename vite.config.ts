@@ -6,7 +6,21 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5174,
+    host: true,
     https: false,
-    host: 'localhost'
+    strictPort: true,
+    cors: true,
+    headers: {
+      'Strict-Transport-Security': 'max-age=0',
+    }
+  },
+  preview: {
+    port: 5174,
+    https: false,
+    strictPort: true,
+    cors: true,
+    headers: {
+      'Strict-Transport-Security': 'max-age=0',
+    }
   }
 })
