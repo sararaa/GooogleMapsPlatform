@@ -6,6 +6,8 @@ import { TopNav } from './components/TopNav';
 import { Dashboard } from './components/sections/Dashboard';
 import { Communications } from './components/sections/Communications';
 import { APIPortal } from './components/sections/APIPortal';
+import { Budget } from './components/sections/Budget';
+import { Documents } from './components/sections/Documents';
 import { Users } from './components/sections/Users';
 import { Activity } from './components/sections/Activity';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -64,22 +66,12 @@ const MainApp: React.FC = () => {
         return <APIPortal />;
       case 'users':
         return <Users />;
+      case 'budget':
+        return <Budget />;
+      case 'documents':
+        return <Documents />;
       case 'worldview':
         return <MyGlobe />;
-      case 'budget':
-        return (
-          <div className="p-6 text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Budget Management</h1>
-            <p className="text-gray-600">Budget tracking features will be implemented here</p>
-          </div>
-        );
-      case 'documents':
-        return (
-          <div className="p-6 text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Document Management</h1>
-            <p className="text-gray-600">Document management features will be implemented here</p>
-          </div>
-        );
       case 'activity':
         return (
           <ErrorBoundary fallback={
