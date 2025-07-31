@@ -7,6 +7,7 @@ from twilio.rest import Client
 from twilio.twiml.voice_response import VoiceResponse
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from whisper_test import process_audio
 from dotenv import load_dotenv
 # Find your Account SID and Auth Token at twilio.com/console
 # and set the environment variables. See http://twil.io/secure
@@ -43,8 +44,7 @@ def handle_citizen_call():
         finish_on_key='#*',
         action='/process_recording',
         method='POST',
-        transcribe=True,
-        transcribe_callback='/transcription_complete'
+        transcribe=False
     )
     
     return str(resp)
@@ -80,48 +80,43 @@ def process_recording():
     
     citizen_reports.append(report)
     
+    # Process the audio recording using whisper_test.py
+    try:
+        # Download the audio file and process it
+        import tempfile
+        import urllib.request
+        
+        with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as temp_file:
+            urllib.request.urlretrieve(recording_url, temp_file.name)
+            temp_file_path = temp_file.name
+        
+        # Use the process_audio function from whisper_test.py
+        transcript = process_audio(temp_file_path)
+        
+        # Clean up temporary file
+        os.unlink(temp_file_path)
+        
+        # Update the report with transcription
+        report['transcription'] = transcript
+        
+        # Use the extract_address_and_incident_from_text function from whisper_test.py
+        from whisper_test import extract_address_and_incident_from_text
+        address, incident_type = extract_address_and_incident_from_text(transcript)
+        
+        if address and incident_type:
+            report['location'] = address
+            report['incident_type'] = incident_type
+        else:
+            report['location'] = "Location not specified"
+            report['incident_type'] = "unknown"
+        
+        # Create activity entry for the frontend
+        create_activity_entry(report)
+        
+    except Exception as e:
+        print(f"Error processing audio: {e}")
+    
     return str(resp)
-
-@app.route("/transcription_complete", methods=['POST'])
-def transcription_complete():
-    """Handle completed transcription."""
-    call_sid = request.form.get('CallSid', '')
-    transcription_text = request.form.get('TranscriptionText', '')
-    
-    # Find and update the report
-    for report in citizen_reports:
-        if report['id'] == call_sid:
-            report['transcription'] = transcription_text
-            report['location'] = extract_location_from_text(transcription_text)
-            
-            # Create activity entry for the frontend
-            create_activity_entry(report)
-            break
-    
-    return '', 200
-
-def extract_location_from_text(text):
-    """Extract location information from transcribed text."""
-    # Simple location extraction (enhance with AI/NLP for better results)
-    location_keywords = ['street', 'avenue', 'road', 'boulevard', 'lane', 'way', 'drive', 'court']
-    words = text.lower().split()
-    
-    for i, word in enumerate(words):
-        if any(keyword in word for keyword in location_keywords):
-            # Try to get 2-3 words before and after street name
-            start = max(0, i-2)
-            end = min(len(words), i+3)
-            potential_location = ' '.join(words[start:end])
-            return potential_location.title()
-    
-    # Look for address-like patterns
-    import re
-    address_pattern = r'\b\d+\s+[A-Za-z\s]+(?:street|avenue|road|boulevard|lane|way|drive|court)\b'
-    matches = re.findall(address_pattern, text, re.IGNORECASE)
-    if matches:
-        return matches[0].title()
-    
-    return "Location not specified"
 
 def create_activity_entry(report):
     """Create an activity entry for the frontend dashboard."""
@@ -144,6 +139,8 @@ def create_activity_entry(report):
     # For now, we'll store in memory and provide an API endpoint
     print(f"New citizen report created: {activity}")
     return activity
+
+
 
 def determine_priority(transcription):
     """Determine priority based on transcription content.""" 

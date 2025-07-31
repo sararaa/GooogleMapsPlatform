@@ -29,24 +29,34 @@ q = queue.Queue()
 def audio_callback(indata, frames, time, status):
     q.put(indata.copy())
 
-def transcribe_for_seconds(seconds=10):
+def transcribe_for_seconds(seconds=10, audio_file_path=None):
     model = WhisperModel(MODEL_SIZE, compute_type="int8")
-    buffer = np.empty((0,), dtype=np.float32)
-    start_time = time.time()
-    # this is the syntax for taking in input, needs to be chunked and such
-    with sd.InputStream(callback=audio_callback, samplerate=SAMPLE_RATE, channels=1, blocksize=BLOCKSIZE):
-        print(f"🎙️ Listening for {seconds} seconds...")
-        while time.time() - start_time < seconds:
-            try:
-                audio_chunk = q.get(timeout=seconds)
-                buffer = np.concatenate((buffer, audio_chunk.flatten()))
-            except queue.Empty:
-                break
-    print("Transcribing...")
-    segments, _ = model.transcribe(buffer, language="en")
-    full_text = " ".join(seg.text.strip() for seg in segments)
-    print(f"Transcript: {full_text}")
-    return full_text
+    
+    if audio_file_path:
+        # Transcribe the provided audio file
+        print(f"Transcribing audio file: {audio_file_path}")
+        segments, _ = model.transcribe(audio_file_path, language="en")
+        full_text = " ".join(seg.text.strip() for seg in segments)
+        print(f"Transcript: {full_text}")
+        return full_text
+    else:
+        # Record live audio (original functionality)
+        buffer = np.empty((0,), dtype=np.float32)
+        start_time = time.time()
+        # this is the syntax for taking in input, needs to be chunked and such
+        with sd.InputStream(callback=audio_callback, samplerate=SAMPLE_RATE, channels=1, blocksize=BLOCKSIZE):
+            print(f"🎙️ Listening for {seconds} seconds...")
+            while time.time() - start_time < seconds:
+                try:
+                    audio_chunk = q.get(timeout=seconds)
+                    buffer = np.concatenate((buffer, audio_chunk.flatten()))
+                except queue.Empty:
+                    break
+        print("Transcribing...")
+        segments, _ = model.transcribe(buffer, language="en")
+        full_text = " ".join(seg.text.strip() for seg in segments)
+        print(f"Transcript: {full_text}")
+        return full_text
 
 def extract_address_and_incident_from_text(text):
     # The client gets the API key from the environment variable `GEMINI_API_KEY`.
@@ -100,18 +110,24 @@ def upload_to_supabase(lat, lng, incident_type, formatted_address):
         return False
 
 
-if __name__ == "__main__":
+def process_audio(audio_file_path=None):
     # Instructions for user
     if not GOOGLE_MAPS_API_KEY or not GEMINI_API_KEY:
         print("Please set GOOGLE_MAPS_API_KEY and GEMINI_API_KEY in your .env file.")
-        exit(1)
+        return "API keys not configured"
 
-    transcript = transcribe_for_seconds(TRANSCRIBE_SECONDS)
+    if audio_file_path:
+        # Transcribe the provided audio file
+        transcript = transcribe_for_seconds(TRANSCRIBE_SECONDS, audio_file_path)
+    else:
+        # Record live audio
+        transcript = transcribe_for_seconds(TRANSCRIBE_SECONDS)
+    
     address, incident_type = extract_address_and_incident_from_text(transcript)
     
     if not address or not incident_type:
         print("No address or incident type found in the transcript.")
-        exit(1)
+        return transcript
     
     print(f"Extracted address: {address}")
     print(f"Extracted incident type: {incident_type}")
@@ -119,7 +135,7 @@ if __name__ == "__main__":
     geocode = geocode_location(address, GOOGLE_MAPS_API_KEY)
     if not geocode:
         print("Geocoding failed.")
-        exit(1)
+        return transcript
     print(f"Geocoded: {geocode}")
 
     # Upload to Supabase
@@ -129,4 +145,6 @@ if __name__ == "__main__":
         incident_type, 
         geocode['formatted_address']
     )
+    
+    return transcript
 
