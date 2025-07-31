@@ -68,12 +68,34 @@ const MyGlobe: React.FC = () => {
           setAlerts(alertsData);
         }
 
-        // Fetch citizen reports from backend
-        const response = await fetch('http://localhost:5001/api/citizen-reports');
-        if (response.ok) {
-          const rawReports = await response.json();
-          if (Array.isArray(rawReports)) {
-            const transformedReports = rawReports.map(transformReportData);
+        // Fetch citizen reports from backend (Flask) or use alerts as fallback
+        try {
+          const response = await fetch('http://localhost:5001/api/citizen-reports');
+          if (response.ok) {
+            const rawReports = await response.json();
+            if (Array.isArray(rawReports)) {
+              const transformedReports = rawReports.map(transformReportData);
+              setCitizenReports(transformedReports);
+            }
+          }
+        } catch (flaskError) {
+          console.log('Flask API not available, using Supabase alerts as citizen reports...');
+          // Use the alerts data as citizen reports for production
+          if (alertsData) {
+            const transformedReports: any[] = alertsData.map((alert: any) => ({
+              id: `supabase_${alert.id}`,
+              type: 'citizen_report',
+              title: 'Citizen Report from Phone',
+              description: `${alert.type} reported via phone call`,
+              location: 'Location from coordinates',
+              caller_number: 'Unknown',
+              recording_url: '',
+              full_transcription: `${alert.type} incident reported`,
+              timestamp: alert.created_at || new Date().toISOString(),
+              status: 'new',
+              priority: 'medium',
+              coordinates: alert.map_point ? parseGeometry(alert.map_point) : undefined
+            }));
             setCitizenReports(transformedReports);
           }
         }
