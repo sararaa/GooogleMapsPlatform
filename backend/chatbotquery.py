@@ -16,7 +16,7 @@ model = genai.GenerativeModel(model_name="models/gemini-1.5-flash-8b")
 bp = Blueprint('chatbot', __name__)
 
 # Load CSV once on startup
-df = pd.read_csv("311_Alerts_Dataset.csv")  
+df = pd.read_csv("../311_Alerts_Dataset.csv")  
 csv_context = df.head(100).to_string(index=False)
 
 @bp.route("/ask-chatbot", methods=["POST"])
