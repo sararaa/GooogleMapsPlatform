@@ -71,21 +71,21 @@ export const Activity: React.FC = () => {
         // Fallback to Supabase (for production/Vercel)
         const { data: alertsData, error: supabaseError } = await supabase.from('alerts').select('*');
         if (!supabaseError && alertsData) {
-                     // Transform Supabase alerts to CitizenReport format
-           const transformedReports: CitizenReport[] = alertsData.map((alert: any) => ({
-             id: `supabase_${alert.id}`,
-             type: 'citizen_report' as const,
-             title: 'Citizen Report from Phone',
-             description: `${alert.type} reported via phone call`,
-             location: 'Location from coordinates',
-             caller_number: 'Unknown',
-             recording_url: '',
-             full_transcription: `${alert.type} incident reported`,
-             timestamp: alert.created_at || new Date().toISOString(),
-             status: 'new' as const,
-             priority: 'medium' as const,
-             coordinates: alert.map_point ? parseSupabaseGeometry(alert.map_point) : undefined
-           }));
+          // Transform Supabase alerts to CitizenReport format using rich metadata
+          const transformedReports: CitizenReport[] = alertsData.map((alert: any) => ({
+            id: `supabase_${alert.id}`,
+            type: 'citizen_report' as const,
+            title: alert.source === 'phone_call' ? 'Citizen Report from Phone' : 'Citizen Report',
+            description: alert.description || `${alert.type} reported`,
+            location: alert.location_text || 'Location from coordinates',
+            caller_number: alert.caller_number || 'Unknown',
+            recording_url: alert.recording_url || '',
+            full_transcription: alert.full_transcription || `${alert.type} incident reported`,
+            timestamp: alert.created_at || new Date().toISOString(),
+            status: (['new', 'in_progress', 'resolved', 'closed'].includes(alert.status) ? alert.status : 'new') as 'new' | 'in_progress' | 'resolved' | 'closed',
+            priority: (['low', 'medium', 'high', 'urgent'].includes(alert.priority) ? alert.priority : 'medium') as ProjectPriority,
+            coordinates: alert.map_point ? parseSupabaseGeometry(alert.map_point) : undefined
+          }));
           setCitizenReports(transformedReports);
         } else {
           setCitizenReports([]);

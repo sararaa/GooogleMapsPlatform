@@ -80,20 +80,20 @@ const MyGlobe: React.FC = () => {
           }
         } catch (flaskError) {
           console.log('Flask API not available, using Supabase alerts as citizen reports...');
-          // Use the alerts data as citizen reports for production
+          // Use the alerts data as citizen reports for production with rich metadata
           if (alertsData) {
             const transformedReports: any[] = alertsData.map((alert: any) => ({
               id: `supabase_${alert.id}`,
               type: 'citizen_report',
-              title: 'Citizen Report from Phone',
-              description: `${alert.type} reported via phone call`,
-              location: 'Location from coordinates',
-              caller_number: 'Unknown',
-              recording_url: '',
-              full_transcription: `${alert.type} incident reported`,
+              title: alert.source === 'phone_call' ? 'Citizen Report from Phone' : 'Citizen Report',
+              description: alert.description || `${alert.type} reported`,
+              location: alert.location_text || 'Location from coordinates',
+              caller_number: alert.caller_number || 'Unknown',
+              recording_url: alert.recording_url || '',
+              full_transcription: alert.full_transcription || `${alert.type} incident reported`,
               timestamp: alert.created_at || new Date().toISOString(),
-              status: 'new',
-              priority: 'medium',
+              status: alert.status || 'new',
+              priority: alert.priority || 'medium',
               coordinates: alert.map_point ? parseGeometry(alert.map_point) : undefined
             }));
             setCitizenReports(transformedReports);
