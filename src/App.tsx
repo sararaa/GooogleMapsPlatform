@@ -13,6 +13,8 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import  MyGlobe  from './components/sections/Alert';
 import AlertReview from './components/AlertReview';
 import { Routes, Route } from 'react-router-dom';
+import MunicipalProjectSystem from './components/Projects/MunicipalProjectSystem';
+
 
 const MainApp: React.FC = () => {
   const { user, isLoading } = useAuth();
@@ -51,6 +53,8 @@ const MainApp: React.FC = () => {
         return <Dashboard />;
       case 'projects':
         return <Projects />;
+      case 'municipal-projects':
+        return <MunicipalProjectSystem className="h-full" />;
       case 'communications-reach-out':
         return <Communications initialType={'reach-out' as const} />;
       case 'communications-city-forum':

@@ -40,6 +40,7 @@ interface SubNavItem {
 const navItems: NavItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
   { id: 'projects', label: 'Projects', icon: FolderKanban, badge: 3 },
+  { id: 'municipal-projects', label: 'Municipal Projects', icon: HardHat }, 
   { 
     id: 'communications', 
     label: 'Communications', 
