@@ -69,7 +69,7 @@ const MyGlobe: React.FC = () => {
         }
 
         // Fetch citizen reports from backend
-        const response = await fetch('http://localhost:5000/api/citizen-reports');
+        const response = await fetch('http://localhost:5001/api/citizen-reports');
         if (response.ok) {
           const rawReports = await response.json();
           if (Array.isArray(rawReports)) {

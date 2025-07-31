@@ -36,7 +36,7 @@ export const Activity: React.FC = () => {
     const fetchCitizenReports = async () => {
       try {
         setError(null);
-        const response = await fetch('http://localhost:5000/api/citizen-reports');
+        const response = await fetch('http://localhost:5001/api/citizen-reports');
         if (response.ok) {
           const rawReports = await response.json();
           if (Array.isArray(rawReports)) {
@@ -71,7 +71,7 @@ export const Activity: React.FC = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:5000/api/citizen-reports/${reportId}/status`, {
+      const response = await fetch(`http://localhost:5001/api/citizen-reports/${reportId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -18,7 +18,7 @@ SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")  # Use service role key fo
 TRANSCRIBE_SECONDS = 10
 SAMPLE_RATE = 16000
 BLOCKSIZE = 4000
-MODEL_SIZE = "large"
+MODEL_SIZE = "base"
 
 supabase: Client = None
 if SUPABASE_URL and SUPABASE_KEY:
