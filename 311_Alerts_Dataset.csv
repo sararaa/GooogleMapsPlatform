@@ -1,0 +1,101 @@
+Source,ID,Type/Description,Location,Latitude,Longitude,Timestamp
+Alert,1,abandoned vehicle,"500 3rd St, Davis, CA",38.54578,-121.74052,2025-07-04T13:12:00Z
+Alert,2,abandoned vehicle,"110 Russell Blvd, Davis, CA",38.54491,-121.74705,2025-07-08T17:58:00Z
+Alert,3,blocked drain,"1122 Olive Dr, Davis, CA",38.55412,-121.72642,2025-07-24T12:04:00Z
+Alert,4,pothole,"University Mall, Davis, CA",38.54854,-121.76121,2025-07-08T20:15:00Z
+Alert,5,illegal dumping,"Sutter Health Park, Sacramento, CA",38.58035,-121.51306,2025-07-29T06:37:00Z
+Alert,6,abandoned vehicle,"Sutter Health Park, Sacramento, CA",38.58035,-121.51306,2025-06-30T11:28:00Z
+Alert,7,dead animal,"900 Alhambra Blvd, Sacramento, CA",38.57322,-121.47139,2025-07-05T10:16:00Z
+Alert,8,sidewalk crack,"123 Main St, Sacramento, CA",38.58157,-121.4944,2025-07-11T00:26:00Z
+Alert,9,abandoned vehicle,"900 Alhambra Blvd, Sacramento, CA",38.57322,-121.47139,2025-07-20T05:42:00Z
+Alert,10,dead animal,"2100 16th St, Sacramento, CA",38.57081,-121.4881,2025-07-06T05:15:00Z
+Alert,11,tree fallen,"500 3rd St, Davis, CA",38.54578,-121.74052,2025-07-28T12:57:00Z
+Alert,12,illegal dumping,"400 E St, Davis, CA",38.54462,-121.73713,2025-07-20T04:27:00Z
+Alert,13,broken streetlight,"Sutter Health Park, Sacramento, CA",38.58035,-121.51306,2025-07-15T01:20:00Z
+Alert,14,blocked drain,"900 Alhambra Blvd, Sacramento, CA",38.57322,-121.47139,2025-07-01T11:53:00Z
+Alert,15,flooded street,"400 E St, Davis, CA",38.54462,-121.73713,2025-07-21T15:36:00Z
+Alert,16,abandoned vehicle,"110 Russell Blvd, Davis, CA",38.54491,-121.74705,2025-07-12T10:43:00Z
+Alert,17,illegal dumping,"900 Alhambra Blvd, Sacramento, CA",38.57322,-121.47139,2025-07-25T17:14:00Z
+Alert,18,illegal dumping,"500 3rd St, Davis, CA",38.54578,-121.74052,2025-07-12T18:52:00Z
+Alert,19,tree fallen,"400 E St, Davis, CA",38.54462,-121.73713,2025-07-12T01:28:00Z
+Alert,20,abandoned vehicle,"900 Alhambra Blvd, Sacramento, CA",38.57322,-121.47139,2025-07-02T01:13:00Z
+Alert,21,sidewalk crack,"500 3rd St, Davis, CA",38.54578,-121.74052,2025-07-19T13:34:00Z
+Alert,22,graffiti,"110 Russell Blvd, Davis, CA",38.54491,-121.74705,2025-07-12T05:16:00Z
+Alert,23,broken streetlight,"University Mall, Davis, CA",38.54854,-121.76121,2025-07-29T18:58:00Z
+Alert,24,blocked drain,"500 3rd St, Davis, CA",38.54578,-121.74052,2025-07-01T04:03:00Z
+Alert,25,graffiti,"2100 16th St, Sacramento, CA",38.57081,-121.4881,2025-07-17T21:23:00Z
+Alert,26,dead animal,"900 Alhambra Blvd, Sacramento, CA",38.57322,-121.47139,2025-07-04T15:01:00Z
+Alert,27,abandoned vehicle,"500 3rd St, Davis, CA",38.54578,-121.74052,2025-07-26T11:56:00Z
+Alert,28,broken streetlight,"400 E St, Davis, CA",38.54462,-121.73713,2025-07-04T02:14:00Z
+Alert,29,illegal dumping,"500 3rd St, Davis, CA",38.54578,-121.74052,2025-07-02T02:32:00Z
+Alert,30,dead animal,"400 E St, Davis, CA",38.54462,-121.73713,2025-07-24T15:35:00Z
+Alert,31,broken streetlight,"123 Main St, Sacramento, CA",38.58157,-121.4944,2025-07-22T21:56:00Z
+Alert,32,pothole,"123 Main St, Sacramento, CA",38.58157,-121.4944,2025-06-30T15:40:00Z
+Alert,33,flooded street,"Sutter Health Park, Sacramento, CA",38.58035,-121.51306,2025-06-30T14:12:00Z
+Alert,34,flooded street,"2100 16th St, Sacramento, CA",38.57081,-121.4881,2025-07-16T20:05:00Z
+Alert,35,flooded street,"123 Main St, Sacramento, CA",38.58157,-121.4944,2025-07-09T06:10:00Z
+Alert,36,sidewalk crack,"University Mall, Davis, CA",38.54854,-121.76121,2025-07-30T16:37:00Z
+Alert,37,blocked drain,"110 Russell Blvd, Davis, CA",38.54491,-121.74705,2025-07-11T18:06:00Z
+Alert,38,broken streetlight,"2100 16th St, Sacramento, CA",38.57081,-121.4881,2025-07-14T21:05:00Z
+Alert,39,illegal dumping,"University Mall, Davis, CA",38.54854,-121.76121,2025-07-03T19:47:00Z
+Alert,40,blocked drain,"1st & G St, Davis, CA",38.54322,-121.7389,2025-07-20T12:20:00Z
+Alert,41,abandoned vehicle,"110 Russell Blvd, Davis, CA",38.54491,-121.74705,2025-07-21T10:42:00Z
+Alert,42,sidewalk crack,"University Mall, Davis, CA",38.54854,-121.76121,2025-07-25T02:14:00Z
+Alert,43,tree fallen,"Sutter Health Park, Sacramento, CA",38.58035,-121.51306,2025-06-30T04:26:00Z
+Alert,44,pothole,"University Mall, Davis, CA",38.54854,-121.76121,2025-07-10T08:46:00Z
+Alert,45,blocked drain,"Sutter Health Park, Sacramento, CA",38.58035,-121.51306,2025-07-03T04:37:00Z
+Alert,46,graffiti,"University Mall, Davis, CA",38.54854,-121.76121,2025-07-18T18:59:00Z
+Alert,47,abandoned vehicle,"1122 Olive Dr, Davis, CA",38.55412,-121.72642,2025-07-10T00:20:00Z
+Alert,48,tree fallen,"2100 16th St, Sacramento, CA",38.57081,-121.4881,2025-07-02T18:53:00Z
+Alert,49,illegal dumping,"123 Main St, Sacramento, CA",38.58157,-121.4944,2025-07-20T22:52:00Z
+Alert,50,illegal dumping,"900 Alhambra Blvd, Sacramento, CA",38.57322,-121.47139,2025-07-07T16:27:00Z
+Alert,51,blocked drain,"1st & G St, Davis, CA",38.54322,-121.7389,2025-07-09T15:18:00Z
+Alert,52,flooded street,"1122 Olive Dr, Davis, CA",38.55412,-121.72642,2025-07-15T00:36:00Z
+Alert,53,dead animal,"900 Alhambra Blvd, Sacramento, CA",38.57322,-121.47139,2025-07-12T10:21:00Z
+Alert,54,flooded street,"400 E St, Davis, CA",38.54462,-121.73713,2025-06-30T10:00:00Z
+Alert,55,graffiti,"University Mall, Davis, CA",38.54854,-121.76121,2025-07-12T14:38:00Z
+Alert,56,flooded street,"University Mall, Davis, CA",38.54854,-121.76121,2025-07-26T19:04:00Z
+Alert,57,abandoned vehicle,"Sutter Health Park, Sacramento, CA",38.58035,-121.51306,2025-07-13T02:16:00Z
+Alert,58,sidewalk crack,"900 Alhambra Blvd, Sacramento, CA",38.57322,-121.47139,2025-07-19T12:46:00Z
+Alert,59,flooded street,"2100 16th St, Sacramento, CA",38.57081,-121.4881,2025-07-18T04:32:00Z
+Alert,60,abandoned vehicle,"110 Russell Blvd, Davis, CA",38.54491,-121.74705,2025-07-19T23:16:00Z
+Alert,61,blocked drain,"110 Russell Blvd, Davis, CA",38.54491,-121.74705,2025-07-20T17:57:00Z
+Alert,62,tree fallen,"123 Main St, Sacramento, CA",38.58157,-121.4944,2025-07-13T18:54:00Z
+Alert,63,graffiti,"110 Russell Blvd, Davis, CA",38.54491,-121.74705,2025-07-09T21:03:00Z
+Alert,64,graffiti,"500 3rd St, Davis, CA",38.54578,-121.74052,2025-07-06T09:43:00Z
+Alert,65,illegal dumping,"400 E St, Davis, CA",38.54462,-121.73713,2025-07-24T20:25:00Z
+Alert,66,dead animal,"400 E St, Davis, CA",38.54462,-121.73713,2025-07-10T08:06:00Z
+Alert,67,illegal dumping,"500 3rd St, Davis, CA",38.54578,-121.74052,2025-07-21T14:54:00Z
+Alert,68,illegal dumping,"500 3rd St, Davis, CA",38.54578,-121.74052,2025-07-14T19:29:00Z
+Alert,69,graffiti,"1122 Olive Dr, Davis, CA",38.55412,-121.72642,2025-07-07T19:28:00Z
+Alert,70,sidewalk crack,"110 Russell Blvd, Davis, CA",38.54491,-121.74705,2025-07-12T05:08:00Z
+Alert,71,tree fallen,"University Mall, Davis, CA",38.54854,-121.76121,2025-07-18T23:46:00Z
+Alert,72,tree fallen,"500 3rd St, Davis, CA",38.54578,-121.74052,2025-07-14T10:31:00Z
+Alert,73,graffiti,"123 Main St, Sacramento, CA",38.58157,-121.4944,2025-07-08T18:22:00Z
+Alert,74,broken streetlight,"500 3rd St, Davis, CA",38.54578,-121.74052,2025-07-13T11:02:00Z
+Alert,75,dead animal,"1st & G St, Davis, CA",38.54322,-121.7389,2025-07-15T22:39:00Z
+Alert,76,abandoned vehicle,"900 Alhambra Blvd, Sacramento, CA",38.57322,-121.47139,2025-07-30T15:36:00Z
+Alert,77,blocked drain,"2100 16th St, Sacramento, CA",38.57081,-121.4881,2025-07-17T10:50:00Z
+Alert,78,broken streetlight,"123 Main St, Sacramento, CA",38.58157,-121.4944,2025-07-01T14:54:00Z
+Alert,79,broken streetlight,"400 E St, Davis, CA",38.54462,-121.73713,2025-07-29T09:05:00Z
+Alert,80,broken streetlight,"Sutter Health Park, Sacramento, CA",38.58035,-121.51306,2025-07-10T02:11:00Z
+Alert,81,graffiti,"400 E St, Davis, CA",38.54462,-121.73713,2025-07-26T04:52:00Z
+Alert,82,illegal dumping,"Sutter Health Park, Sacramento, CA",38.58035,-121.51306,2025-07-13T08:23:00Z
+Alert,83,tree fallen,"2100 16th St, Sacramento, CA",38.57081,-121.4881,2025-07-20T01:29:00Z
+Alert,84,graffiti,"1st & G St, Davis, CA",38.54322,-121.7389,2025-07-25T11:27:00Z
+Alert,85,pothole,"Sutter Health Park, Sacramento, CA",38.58035,-121.51306,2025-07-06T10:30:00Z
+Alert,86,graffiti,"1st & G St, Davis, CA",38.54322,-121.7389,2025-07-27T07:06:00Z
+Alert,87,pothole,"400 E St, Davis, CA",38.54462,-121.73713,2025-07-02T22:43:00Z
+Alert,88,blocked drain,"123 Main St, Sacramento, CA",38.58157,-121.4944,2025-07-12T21:35:00Z
+Alert,89,abandoned vehicle,"500 3rd St, Davis, CA",38.54578,-121.74052,2025-07-30T00:26:00Z
+Alert,90,sidewalk crack,"110 Russell Blvd, Davis, CA",38.54491,-121.74705,2025-07-14T21:01:00Z
+Alert,91,pothole,"1st & G St, Davis, CA",38.54322,-121.7389,2025-07-29T01:55:00Z
+Alert,92,graffiti,"123 Main St, Sacramento, CA",38.58157,-121.4944,2025-07-21T13:55:00Z
+Alert,93,flooded street,"900 Alhambra Blvd, Sacramento, CA",38.57322,-121.47139,2025-07-01T05:18:00Z
+Alert,94,broken streetlight,"500 3rd St, Davis, CA",38.54578,-121.74052,2025-07-06T16:40:00Z
+Alert,95,pothole,"University Mall, Davis, CA",38.54854,-121.76121,2025-07-12T19:03:00Z
+Alert,96,broken streetlight,"123 Main St, Sacramento, CA",38.58157,-121.4944,2025-07-18T06:29:00Z
+Alert,97,tree fallen,"500 3rd St, Davis, CA",38.54578,-121.74052,2025-07-26T22:08:00Z
+Alert,98,sidewalk crack,"University Mall, Davis, CA",38.54854,-121.76121,2025-07-02T22:10:00Z
+Alert,99,graffiti,"1st & G St, Davis, CA",38.54322,-121.7389,2025-07-22T09:19:00Z
+Alert,100,illegal dumping,"110 Russell Blvd, Davis, CA",38.54491,-121.74705,2025-07-10T06:28:00Z
