@@ -1,6 +1,6 @@
 # Citizen Reporting System - Backend
 
-This backend system handles incoming Twilio phone calls from citizens reporting city issues like potholes, traffic problems, etc. The system automatically transcribes speech to text and creates activity entries for the frontend dashboard.
+This backend system handles incoming Twilio phone calls from citizens reporting city issues like potholes, traffic problems, etc. The system automatically transcribes speech to text using Whisper AI, processes the content with Gemini AI for location and incident extraction, and creates activity entries for the frontend dashboard.
 
 ## Features
 

@@ -84,7 +84,7 @@ def extract_address_and_incident_from_text(text):
     
     return None, None
 
-def upload_to_supabase(lat, lng, incident_type, formatted_address):
+def upload_to_supabase(lat, lng, incident_type, formatted_address, transcript="", caller_number="", recording_url="", priority="medium"):
     if not supabase:
         print("Supabase not configured. Skipping database upload.")
         return False
@@ -93,14 +93,24 @@ def upload_to_supabase(lat, lng, incident_type, formatted_address):
         # Create geometry point from lat/lng
         point_geometry = f"POINT({lng} {lat})"  # PostGIS format: POINT(longitude latitude)
         
-        # Insert into alerts table
+        # Insert into alerts table with rich data
         data = {
             "map_point": point_geometry,
-            "type": incident_type
+            "type": incident_type,
+            "description": f"Phone report: {transcript[:200]}{'...' if len(transcript) > 200 else ''}",
+            "full_transcription": transcript,
+            "location_text": formatted_address,
+            "caller_number": caller_number,
+            "recording_url": recording_url,
+            "priority": priority,
+            "status": "new",
+            "source": "phone_call"
         }
         
         result = supabase.table("alerts").insert(data).execute()
         print(f"✅ Uploaded to Supabase: {incident_type} at {formatted_address}")
+        print(f"   📝 Transcript: {transcript[:100]}{'...' if len(transcript) > 100 else ''}")
+        print(f"   📞 Caller: {caller_number}")
         return True
         
     except Exception as e:
@@ -149,4 +159,60 @@ def process_audio(audio_file_path=None):
     )
     
     return transcript
+
+def process_citizen_report(transcript, caller_number="", recording_url=""):
+    """Process a complete citizen report with all metadata and upload to Supabase"""
+    # Debug: Check if environment variables are loaded
+    print(f"GOOGLE_MAPS_API_KEY: {'Set' if GOOGLE_MAPS_API_KEY else 'Not set'}")
+    print(f"GEMINI_API_KEY: {'Set' if GEMINI_API_KEY else 'Not set'}")
+    
+    if not GOOGLE_MAPS_API_KEY or not GEMINI_API_KEY:
+        print("Please set GOOGLE_MAPS_API_KEY and GEMINI_API_KEY in your .env file.")
+        return False
+    
+    address, incident_type = extract_address_and_incident_from_text(transcript)
+    
+    if not address or not incident_type:
+        print("No address or incident type found in the transcript.")
+        return False
+    
+    print(f"Extracted address: {address}")
+    print(f"Extracted incident type: {incident_type}")
+
+    geocode = geocode_location(address, GOOGLE_MAPS_API_KEY)
+    if not geocode:
+        print("Geocoding failed.")
+        return False
+    print(f"Geocoded: {geocode}")
+
+    # Determine priority based on incident type
+    priority = determine_priority(incident_type)
+    
+    # Upload to Supabase with all metadata
+    upload_success = upload_to_supabase(
+        geocode['lat'], 
+        geocode['lng'], 
+        incident_type, 
+        geocode['formatted_address'],
+        transcript,
+        caller_number,
+        recording_url,
+        priority
+    )
+    
+    return upload_success
+
+def determine_priority(incident_text):
+    """Determine priority based on incident type"""
+    urgent_keywords = ['fire', 'emergency', 'dangerous', 'urgent', 'accident', 'injury', 'medical']
+    high_keywords = ['pothole', 'traffic light', 'stop sign', 'water', 'gas leak', 'power outage']
+    
+    text_lower = incident_text.lower()
+    
+    if any(keyword in text_lower for keyword in urgent_keywords):
+        return 'urgent'
+    elif any(keyword in text_lower for keyword in high_keywords):
+        return 'high'
+    else:
+        return 'medium'
 

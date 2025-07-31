@@ -209,7 +209,7 @@ export const CitizenReportModal: React.FC<CitizenReportModalProps> = ({
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
-                  * Transcription provided by Twilio speech-to-text service
+                  * Transcription provided by Whisper AI and processed by Gemini AI
                 </p>
               </div>
 

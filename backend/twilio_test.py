@@ -123,7 +123,20 @@ def process_recording():
             # Update the report with transcription
             report['transcription'] = transcript
             
-            # Use the extract_address_and_incident_from_text function from whisper_test.py
+            # Process the complete citizen report with all metadata and upload to Supabase
+            from whisper_test import process_citizen_report
+            upload_success = process_citizen_report(
+                transcript, 
+                caller_number, 
+                recording_url
+            )
+            
+            if upload_success:
+                print("✅ Complete citizen report uploaded to Supabase with all metadata")
+            else:
+                print("❌ Failed to upload complete report to Supabase")
+            
+            # Still extract info for local storage
             from whisper_test import extract_address_and_incident_from_text
             address, incident_type = extract_address_and_incident_from_text(transcript)
             
