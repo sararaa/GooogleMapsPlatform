@@ -4,12 +4,12 @@ import numpy as np
 import sounddevice as sd
 import queue
 from faster_whisper import WhisperModel
-import google.genai as genai  # Updated import for google-genai
+import google.generativeai as genai  # Correct import for google-generativeai
 from geocode_test import geocode_location
 from dotenv import load_dotenv  # For loading .env
 from supabase import create_client, Client  # Supabase integration
 
-load_dotenv()  # Loads variables from .env file in project root
+load_dotenv('../.env')  # Loads variables from .env file in project root
 
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -59,20 +59,18 @@ def transcribe_for_seconds(seconds=10, audio_file_path=None):
         return full_text
 
 def extract_address_and_incident_from_text(text):
-    # The client gets the API key from the environment variable `GEMINI_API_KEY`.
-    client = genai.Client()
+    # Configure the Gemini client with the API key
+    genai.configure(api_key=GEMINI_API_KEY)
+    model = genai.GenerativeModel('gemini-1.5-flash')
     prompt = (
         "Extract the address and incident type from the following text. "
         "Reply in this exact format: ADDRESS|INCIDENT_TYPE\n"
         "For example: '123 Main St, City, State|pothole' or '456 Oak Ave|broken streetlight'\n"
         "If no address is found, reply with: NO_ADDRESS|NO_INCIDENT\n\nText: " + text
     )
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
+    response = model.generate_content(prompt)
     
-    if hasattr(response, 'text') and response.text is not None:
+    if response.text:
         result = response.text.strip()
         print(f"Gemini response: {result}")
         
@@ -111,6 +109,10 @@ def upload_to_supabase(lat, lng, incident_type, formatted_address):
 
 
 def process_audio(audio_file_path=None):
+    # Debug: Check if environment variables are loaded
+    print(f"GOOGLE_MAPS_API_KEY: {'Set' if GOOGLE_MAPS_API_KEY else 'Not set'}")
+    print(f"GEMINI_API_KEY: {'Set' if GEMINI_API_KEY else 'Not set'}")
+    
     # Instructions for user
     if not GOOGLE_MAPS_API_KEY or not GEMINI_API_KEY:
         print("Please set GOOGLE_MAPS_API_KEY and GEMINI_API_KEY in your .env file.")
