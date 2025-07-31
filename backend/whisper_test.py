@@ -93,10 +93,14 @@ def upload_to_supabase(lat, lng, incident_type, formatted_address, transcript=""
         # Create geometry point from lat/lng
         point_geometry = f"POINT({lng} {lat})"  # PostGIS format: POINT(longitude latitude)
         
-        # Insert into alerts table with rich data
+        # Insert into alerts table - start with basic data that exists in schema
         data = {
             "map_point": point_geometry,
-            "type": incident_type,
+            "type": incident_type
+        }
+        
+        # Try to add additional fields if they exist in the schema
+        additional_fields = {
             "description": f"Phone report: {transcript[:200]}{'...' if len(transcript) > 200 else ''}",
             "full_transcription": transcript,
             "location_text": formatted_address,
@@ -107,10 +111,21 @@ def upload_to_supabase(lat, lng, incident_type, formatted_address, transcript=""
             "source": "phone_call"
         }
         
+        # Try with all fields first
+        try:
+            result = supabase.table("alerts").insert({**data, **additional_fields}).execute()
+            print(f"✅ Uploaded to Supabase with full metadata: {incident_type} at {formatted_address}")
+            print(f"   📝 Transcript: {transcript[:100]}{'...' if len(transcript) > 100 else ''}")
+            print(f"   📞 Caller: {caller_number}")
+            return True
+        except Exception as schema_error:
+            print(f"⚠️ Full schema upload failed, trying basic upload: {schema_error}")
+            # Fall back to basic upload
+        
+        # Fallback to basic upload with existing schema
         result = supabase.table("alerts").insert(data).execute()
-        print(f"✅ Uploaded to Supabase: {incident_type} at {formatted_address}")
-        print(f"   📝 Transcript: {transcript[:100]}{'...' if len(transcript) > 100 else ''}")
-        print(f"   📞 Caller: {caller_number}")
+        print(f"✅ Uploaded to Supabase (basic): {incident_type} at {formatted_address}")
+        print(f"   ⚠️ Rich metadata not saved - update Supabase schema to include additional columns")
         return True
         
     except Exception as e:
